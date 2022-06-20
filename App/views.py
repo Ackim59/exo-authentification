@@ -1,9 +1,10 @@
 from flask import Flask, render_template, url_for, redirect, request
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, current_user, logout_user
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 app = Flask(__name__)
-
+# app.wsgi_app = ProxyFix(app.wsgi_app)
 app.config.from_object('config')
 
 from .model import User, db
