@@ -22,7 +22,7 @@ mlflow==1.5.0
 prometheus-client==0.13.1
 prometheus-flask-exporter==0.18.7
 protobuf==3.19.4
-pywin32==227
+# pywin32==227
 PyYAML==6.0
 querystring-parser==1.2.4
 simplejson==3.17.6
