@@ -1,12 +1,14 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title> Bienvenue </title>
-</head>
-<body>
-    <h1> Bienvenue </h1>
+{% extends "base.html" %}
 
-    <p> Ceci est un site en CI/CD. </p>
+{% block title %} 
+Bienvenue 
+{% endblock  %} 
 
-</body>
-</html>
+{% block content %} 
+<h1>Bienvenue</h1>
+
+<p> Ceci est un site en CI/CD. </p>
+
+<a class="btn btn-primary" href="{{ url_for('login') }}" role="button">Login</a>
+<a class="btn btn-primary" href="{{ url_for('signup') }}" role="button">Sign-up</a>
+{% endblock  %} 
