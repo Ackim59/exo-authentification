@@ -1,18 +1,31 @@
 from flask import Flask, render_template, url_for, redirect, request
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, current_user, logout_user
-from werkzeug.middleware.proxy_fix import ProxyFix
+from dotenv import load_dotenv
+import os
+import logging
+from opencensus.ext.azure.log_exporter import AzureLogHandler
 
 app = Flask(__name__)
-# app.wsgi_app = ProxyFix(app.wsgi_app)
 app.config.from_object('config')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 from .model import User, db
+
+# Démarrage du monitoring
+load_dotenv()
+APPLICATIONINSIGHTS_CONNECTION_STRING = os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING")
+# logger = logging.getLogger(__name__)
+# logger.addHandler(AzureLogHandler(connection_string='InstrumentationKey=393a5c37-b4b6-47e6-87db-2012a7af0e1b'))
+
+# for i in range(15):
+# logger.warning("hello world!")
+
 
 @app.route("/")
 @app.route("/index/")
 def home():
-    return render_template(("index.html"))
+    return render_template("index.html")
 
 @app.route('/login')
 def login():
