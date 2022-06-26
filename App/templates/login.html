@@ -9,20 +9,11 @@ login
 
 <h3 class="title">Login</h3>
 
-<form method="POST" action="/login">
+<p>Vous pouvez vou authentifier normalement :</p>
+<p><a href="{{ url_for('auth.login') }}">classic login</a></p>
 
-    <p> <input class="input is-large" type="email" name="email" placeholder="Your Email" autofocus > </p>
-
-
-    <p><input class="input is-large" type="password" name="password" placeholder="Your Password"> </p>
-
-    <p> <label >
-        <input type="checkbox" name="remember">
-        Remember me
-    </label> </p>
-
-    <p> <input type = "submit" value="login"/> </p>
-</form>
+<p>Ou vous pouvez signer avec google :</p>
+<p><a href="{{ url_for('auth.google_login') }}">google sign-in</a></p>
 
 
 {% endblock %}

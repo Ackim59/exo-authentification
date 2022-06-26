@@ -8,6 +8,15 @@ Board
 <h1>Bienvenue {{ name }}</h1>
 
 <p> Ceci est un site en CI/CD. </p>
+{% if google_data is not none %}
+<p> salut {{ google_data.name }}, [{{ google_data.email }} tu t'es enregistré avec succès avec ton compte google</p>
 
-<a class="btn btn-primary" href="{{ url_for('logout') }}" role="button">Logout</a>
+
+    <p>infos utilisateurs récupérés de {{ fetch_url }}</p>
+    {% for key, value in google_data.items() %}
+        {{ key }}: {{ value }}
+    {% endfor %}
+
+{% endif %}
+<a class="btn btn-primary" href="{{ url_for('auth.logout') }}">logout</a>
 {% endblock  %} 

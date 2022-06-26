@@ -9,6 +9,7 @@ Bienvenue
 
 <p> Ceci est un site en CI/CD. </p>
 
-<a class="btn btn-primary" href="{{ url_for('login') }}" role="button">Login</a>
-<a class="btn btn-primary" href="{{ url_for('signup') }}" role="button">Sign-up</a>
+<a class="btn btn-primary" href="{{ url_for('auth.login_page') }}" role="button">Login</a>
+<a class="btn btn-primary" href="{{ url_for('auth.signup') }}" role="button">Sign-up</a>
+
 {% endblock  %} 
