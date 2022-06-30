@@ -4,60 +4,63 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_dance.contrib.google import make_google_blueprint, google
 from App.models import User, Role
 from App import db, app
+from App.forms import Login
+import random, string
 import os
 
 auth = Blueprint("auth", __name__, template_folder="templates", static_folder="static")
 
 # google authentication
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 
 google_blueprint = make_google_blueprint(client_id = os.getenv('GOOGLE_CLIENT_ID'),
                                          client_secret = os.getenv('GOOGLE_CLIENT_SECRET'),
                                          reprompt_consent = True,
                                          scope = ["profile", "email"],
-                                         redirect_to = "main.board_page"
+                                         redirect_to = "main.board"
                                          )
 app.register_blueprint(google_blueprint, url_prefix="/google_login")
 
-@auth.route('/login_page')
-def login_page():
 
-    return render_template('login.html')
-
-@auth.route('/login')
+@auth.route('/login', methods=['GET', 'POST'])
 def login():
+    """[Allow to ask login and generate the template of login.html on login path]
 
-        if google_blueprint.token is None:
-            return render_template("classic_login.html")
+    Returns:
+        [str]: [login page code]
+    """
+    if (not current_user.is_authenticated) & (google.token is None):
+        form = Login()
+        if form.validate_on_submit():
+            user = User.query.filter_by(email=form.email.data).first()
+            if user and check_password_hash(user.password, form.password.data):
+                login_user(user)
+                flash(f"Vous êtes connecté en tant que : {user.name} {user.email}, session administrateur",category="success")
+                return redirect(url_for('main.board'))
+            else:
+                flash('Adresse email ou mot de passe invalide',category="danger")
+        return render_template('login.html',form=form)
+    elif (not current_user.is_authenticated) & (google.token is not None):
+        user_info_endpoint = "oauth2/v2/userinfo"
+        google_data = google.get(user_info_endpoint).json()
+        import logging
+        logging.warning(google_data['email'])
+        user = User.query.filter_by(email=google_data['email']).first()
+        # If user exists go to board page else add user in database and go to board page
+        if user:
+            login_user(user)
+            return redirect(url_for('main.board'))
         else:
-            google_data = None
-            user_info_endpoint = "oauth2/v2/userinfo"
-            if google.authorized:
-                google_data = google.get(user_info_endpoint).json()
-            return render_template('board.html', google_data=google_data, fetch_url=google.base_url + user_info_endpoint)
-
-
-# @auth.route('/login', methods=['POST'])
-# def login():
-    
-#     email = request.form.get('email')
-#     password = request.form.get('password')
-#     remember = True if request.form.get('remember') else False
-
-#     user = User.query.filter_by(email=email).first()
-#     # check if the user actually exists
-#     # take the user-supplied password, hash it, and compare it to the hashed password in the database
-#     if not user or not check_password_hash(user.password, password):
-#         return redirect(url_for('auth.login')) # if the user doesn't exist or password is wrong, reload the page
-#     # if the above check passes, then we know the user has the right credentials
-#     login_user(user, remember=remember)
-#     return redirect(url_for('main.board_page'))
-#     # return redirect(url_for('main.board_page'))
-#     # if user.roles == 'User':
-#     #     return redirect(url_for('main.board_page'))
-#     # elif user.roles == 'Admin':
-#     #     return redirect(url_for('main.admin_board_page'))
+            # To generate a new secret key:
+            password = "".join([random.choice(string.printable) for _ in range(24)])
+            password = generate_password_hash(password, method='sha256')
+            # add the user in the database
+            User.create_user(google_data['name'], password, google_data['email'])
+            # get the user from database and save in session
+            user = User.query.filter_by(email=google_data['email']).first()
+            login_user(user)
+            return redirect(url_for('main.board'))
+    else:
+        return redirect(url_for('main.board'))
 
 @auth.route("/google_login")
 def google_login():
@@ -100,7 +103,7 @@ def logout():
         )
         assert resp.ok, resp.text
         del google_blueprint.token  # Delete OAuth token from storage
-    elif current_user.is_authenticated:
+    if current_user.is_authenticated:
         logout_user()        # Delete Flask-Login's session cookie
 
     return redirect(url_for('main.home'))

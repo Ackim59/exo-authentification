@@ -17,10 +17,10 @@ class DevelopmentConfig(Config):
     os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 
 class TestingConfig(Config):
-    DEBUG = False
+    DEBUG = True
     TESTING = True
     SQLALCHEMY_DATABASE_URI = os.getenv("TESTING_DATABASE_URI")
-    FLASK_ENV= "testing"
+    FLASK_ENV = "testing"
 
 class ProductionConfig(Config):
     DEBUG = False

@@ -2,3 +2,4 @@ __pycache__/
 workflows/
 code_pour_https.png
 .env
+log_essai.py

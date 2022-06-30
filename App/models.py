@@ -18,6 +18,16 @@ class User(UserMixin, db.Model):
 
     roles = db.relationship('Role', secondary=user_roles)
 
+    @classmethod
+    def create_user(self, name, password, email):
+        user = User(
+                    email = email,
+                    name = name,
+                    password = generate_password_hash(password, method='sha256')
+                    )
+        db.session.add(user)
+        db.session.commit()
+
 class Role(db.Model):#, RestrictionsMixin
     __tablename__ = 'roles'
     id = db.Column(db.Integer(), primary_key=True)
