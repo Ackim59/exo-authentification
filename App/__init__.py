@@ -13,7 +13,7 @@ load_dotenv(override=True)
 db = SQLAlchemy()
 authorize = Authorize()
 
-config_name = "development"
+config_name = os.getenv("FLASK_CONFIG")
 
 app = Flask(__name__)
 app.config.from_object(config[config_name])
