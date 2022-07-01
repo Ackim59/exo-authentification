@@ -30,10 +30,17 @@ class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.getenv("PROD_DATABASE_URI").replace('postgres://','postgresql://')
     FLASK_ENV = "production"
 
+class AzureConfig(Config):
+    DEBUG = False
+    # if os.getenv('PROD_DATABASE_URI'):
+    SQLALCHEMY_DATABASE_URI = os.getenv("PROD_DATABASE_URI").replace('postgres://','postgresql://')
+    FLASK_ENV = "production"
+
 config = {
     "development": DevelopmentConfig,
     "testing": TestingConfig,
     "production": ProductionConfig,
+    "azure": AzureConfig,
     "default": DevelopmentConfig
 }
 
