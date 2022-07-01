@@ -1,3 +1,4 @@
+email-validator==1.2.1
 Flask==2.1.2
 Flask_Authorize==0.2.6
 Flask_Dance==6.0.0

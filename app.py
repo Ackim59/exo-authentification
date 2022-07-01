@@ -2,9 +2,10 @@ from App import app
 from dotenv import load_dotenv
 from config import config
 import os
+load_dotenv(override=True)
 
 if __name__ == "__main__":
-    load_dotenv(override=True)
+    
     if os.getenv('FLASK_CONFIG') == "development":
         app.run(debug=app.config['DEBUG'])
     elif os.getenv('FLASK_CONFIG') == "production":
