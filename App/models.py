@@ -1,6 +1,7 @@
 from werkzeug.security import generate_password_hash
 from flask_authorize import RestrictionsMixin
 from flask_login import UserMixin
+import logging as lg
 
 from App import db
 
@@ -38,8 +39,6 @@ class Role(db.Model):#, RestrictionsMixin
 #     id = db.Column(db.Integer(), primary_key=True)
 #     user_id = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
 #     role_id = db.Column(db.Integer(), db.ForeignKey('roles.id', ondelete='CASCADE'))
-
-import logging as lg
 
 def init_db():
     db.drop_all()
