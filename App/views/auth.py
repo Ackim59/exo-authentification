@@ -20,7 +20,6 @@ google_blueprint = make_google_blueprint(client_id = os.getenv('GOOGLE_CLIENT_ID
                                          )
 app.register_blueprint(google_blueprint, url_prefix="/google_login")
 
-
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     """[Allow to ask login and generate the template of login.html on login path]
@@ -31,6 +30,8 @@ def login():
     if (not current_user.is_authenticated) & (google.token is None):
         form = Login()
         if form.validate_on_submit():
+            import logging
+            logging.warning('coucou')
             user = User.query.filter_by(email=form.email.data).first()
             if user and check_password_hash(user.password, form.password.data):
                 login_user(user)
