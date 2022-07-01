@@ -29,8 +29,6 @@ class ProductionConfig(Config):
     # if os.getenv('PROD_DATABASE_URI'):
     SQLALCHEMY_DATABASE_URI = os.getenv("PROD_DATABASE_URI").replace('postgres://','postgresql://')
     FLASK_ENV = "production"
-    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-    os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 
 config = {
     "development": DevelopmentConfig,
