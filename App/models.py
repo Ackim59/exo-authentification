@@ -2,8 +2,9 @@ from werkzeug.security import generate_password_hash
 from flask_authorize import RestrictionsMixin
 from flask_login import UserMixin
 import logging as lg
+from flask_sqlalchemy import SQLAlchemy
 
-from App import db
+db = SQLAlchemy()
 
 user_roles = db.Table('user_roles', db.Model.metadata,
     db.Column('role_id', db.Integer, db.ForeignKey('roles.id')),
@@ -21,6 +22,8 @@ class User(UserMixin, db.Model):
 
     @classmethod
     def create_user(self, name, password, email):
+        import logging
+        logging.warning("en cours denregistrement -----------------------------------------------------------------")
         user = User(
                     email = email,
                     name = name,

@@ -3,54 +3,62 @@ from dotenv import load_dotenv
 import os
 import logging
 from opencensus.ext.azure.log_exporter import AzureLogHandler
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from config import config
-from flask_authorize import Authorize
+# from flask_authorize import Authorize
 
 load_dotenv(override=True)
 
-db = SQLAlchemy()
-authorize = Authorize()
+def create_app(config_name):
+    
+    # authorize = Authorize()
 
-config_name = os.getenv("FLASK_CONFIG")
+    app = Flask(__name__)
+        
+    app.config.from_object(config[config_name])
+    config[config_name].init_app(app)
 
-app = Flask(__name__)
-app.config.from_object(config[config_name])
-config[config_name].init_app(app)
+    # Démarrage du monitoring
+    logger = logging.getLogger(__name__)
+    logger.addHandler(AzureLogHandler(connection_string='InstrumentationKey=' + os.environ.get("CONNECTION_STRING")))
+    logger.setLevel(logging.WARN)
 
-# Démarrage du monitoring
-logger = logging.getLogger(__name__)
-logger.addHandler(AzureLogHandler(connection_string='InstrumentationKey=' + os.environ.get("CONNECTION_STRING")))
-logger.setLevel(logging.WARN)
+    from .models import db, User
+    db.init_app(app)
+    
+    login_manager = LoginManager()
+    login_manager.login_view = 'auth.login'
+    login_manager.init_app(app)
 
-login_manager = LoginManager()
-login_manager.login_view = 'auth.login'
-login_manager.init_app(app)
+    @login_manager.user_loader
+    def load_user(user_id):
+        # since the user_id is just the primary key of our user table, use it in the query for the user
+        return User.query.get(int(user_id))
+    with app.app_context():
+        from App.views.auth import auth as auth_blueprint
+        app.register_blueprint(auth_blueprint)
+        
+        from App.views.main import main as main_blueprint
+        app.register_blueprint(main_blueprint)
 
-from .models import User
-@login_manager.user_loader
-def load_user(user_id):
-    # since the user_id is just the primary key of our user table, use it in the query for the user
-    return User.query.get(int(user_id))
+        from App.views.auth import google_blueprint as google_bp
+        app.register_blueprint(google_bp, url_prefix="/google_login")
 
-# authorize = Authorize(app)
-# Connect sqlalchemy to app
-db.init_app(app)
+    @app.cli.command("init_db")
+    def init_db():
+        from App import models
+        models.init_db()
 
-@app.cli.command("init_db")
-def init_db():
-    from App import models
-    models.init_db()
+    # blueprint for auth routes in our app
+    
+    
 
-# blueprint for auth routes in our app
-from App.views.auth import auth as auth_blueprint
-app.register_blueprint(auth_blueprint)
+    # blueprint for non-auth parts of app
+    # from App.views.auth import google as google_blueprint
+    # app.register_blueprint(google_blueprint, url_prefix="/google_login")
 
-# blueprint for non-auth parts of app
-# from App.views.auth import google as google_blueprint
-# app.register_blueprint(google_blueprint, url_prefix="/google_login")
+    # blueprint for non-auth parts of app
+    
+    
 
-# blueprint for non-auth parts of app
-from App.views.main import main as main_blueprint
-app.register_blueprint(main_blueprint)
+    return app

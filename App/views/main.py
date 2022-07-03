@@ -17,14 +17,23 @@ def home():
 # @authorize.has_role('User')
 @login_required
 def board():
-    if current_user.is_authenticated:
+
+    if google.token is None:
+        import logging
+        logging.warning("coucou")
         name = current_user.name
-    elif google.token is not None:
-        name = google.name
-    user_info_endpoint = "oauth2/v2/userinfo"
-    import logging
-    logging.warning(google.get(user_info_endpoint).json())
-    return name#render_template('board.html')#, name=current_user.name)
+        email = current_user.email
+        login_google = False
+
+    else:
+        import logging
+        logging.warning("authentifié ?" + str(current_user.is_authenticated))
+        user_info_endpoint = "oauth2/v2/userinfo"
+        google_data = google.get(user_info_endpoint).json()
+        name = google_data['name']
+        email = google_data['email']
+        login_google = True
+    return render_template('board.html', name=name, email=email, login_google=login_google)#, name=current_user.name)
 
 @main.route('/admin_board')
 def admin_board():

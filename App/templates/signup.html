@@ -6,26 +6,28 @@ Sign up
 
 {% block content %}
 
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-    <div class="notification is-danger">
-        {{ messages[0] }}. Go to <a href="{{ url_for('auth.login') }}">login page</a>.
-    </div>
-{% endif %}
-{% endwith %}
-
-<h3>Sign Up</h3>
-<div >
-    <form method="POST" action="/signup">
-
-        <p> <input  type="email" name="email" placeholder="Email" autofocus=""> </p>
-
-        <p> <input  type="text" name="name" placeholder="Name" autofocus=""> </p>
-
-        <p> <input  type="password" name="password" placeholder="Password"> </p>
-
-        <p> <button class="button is-block is-info is-large is-fullwidth">Sign Up</button> </p>
+<div class='container mt-5'>
+    <h1> Sign-up </h1>
+    <br>
+    <form method="POST" class="form-connect">
+        {{ form.hidden_tag() }}
+        
+        {{ form.email.label() }}
+        {{ form.email(placeholder="exemple@exemple.com", class="form-control",id="signup_email") }}
+        <br>
+        {{ form.name.label() }}
+        {{ form.name(placeholder="Jean Dupont", class="form-control",id="signup_name") }}
+        <br>
+        {{ form.password.label() }}
+        {{ form.password(placeholder="***********", class="form-control",id="signup_password") }}
+        <br>
+        {{ form.confirm_password.label() }}
+        {{ form.confirm_password(placeholder="***********", class="form-control", id="signup_confirm_password") }}
+        <br>
+        {{ form.submit(class="btn btn-lg btn-primary d-block", id="button_signup")}}
+        <br>
     </form>
-</div>
+    <br>
+</div>  
 
 {% endblock %}

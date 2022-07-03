@@ -8,15 +8,10 @@ Board
 <h1>Bienvenue {{ name }}</h1>
 
 <p> Ceci est un site en CI/CD. </p>
-{% if google_data is not none %}
-<p> salut {{ google_data.name }}, [{{ google_data.email }} tu t'es enregistré avec succès avec ton compte google</p>
-
-
-    <p>infos utilisateurs récupérés de {{ fetch_url }}</p>
-    {% for key, value in google_data.items() %}
-        {{ key }}: {{ value }}
-    {% endfor %}
-
+{% if login_google == true %}
+    <p> salut {{ name }}, {{ email }} tu t'es enregistré avec succès avec ton compte google.</p>
+{% else %}
+    <p> salut {{ name }}, {{ email }} tu t'es enregistré avec succès en local.</p>
 {% endif %}
 <a class="btn btn-primary" href="{{ url_for('auth.logout') }}">logout</a>
 {% endblock  %} 

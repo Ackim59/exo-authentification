@@ -1,9 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="bird icon" href="{{ url_for('main.static', filename='bird.ico') }}">
     <title> {% block title %} {% endblock  %} </title>
 </head>
 <body>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div>{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     {% block content %} {% endblock  %}
 
 </body>
